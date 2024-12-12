@@ -1,13 +1,12 @@
 defmodule Miki.Plug.Register do
-  import Plug.Conn
-  import Jason
   import Miki.Users
+  import Miki.Utils.Send
 
   def init(options), do: options
 
   def call(conn, _opts) do
     if conn.method != "POST" do
-      send_resp(conn, 404, "Only accept POST method.")
+      conn |> send_message("Only POST method is accepted.", 404)
     else
       with %{
              "username" => username,
@@ -16,23 +15,18 @@ defmodule Miki.Plug.Register do
              "password" => password
            } <- conn.body_params do
         cond do
-          get_user_by_name(username) != [] ->
-            json = encode!(%{"message" => "Username already exists."})
-            conn |> put_resp_content_type("application/json") |> send_resp(200, json)
+          get_user_by_name(username) ->
+            conn |> send_message("Username already exists.")
 
-          get_user_by_email(email) != [] ->
-            json = encode!(%{"message" => "Email already exists."})
-            conn |> put_resp_content_type("application/json") |> send_resp(200, json)
+          get_user_by_email(email) ->
+            conn |> send_message("Email already exists.")
 
           true ->
             add_user(username, nickname, email, password)
-            json = encode!(%{"message" => "Successfully registered."})
-            conn |> put_resp_content_type("application/json") |> send_resp(200, json)
+            conn |> send_message("Successfully registered.")
         end
       else
-        _ ->
-          json = encode!(%{"message" => "Invalid parameters."})
-          conn |> put_resp_content_type("application/json") |> send_resp(200, json)
+        _ -> conn |> send_message("Invalid parameters.")
       end
     end
   end
