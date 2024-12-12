@@ -1,0 +1,2 @@
+defmodule Miki do
+end

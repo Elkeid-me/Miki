@@ -1,0 +1,13 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/.elixir_ls/
+/.fetch/
+/.vscode/*
+!.vscode/extensions.json
+erl_crash.dump
+*.ez
+miki-*.tar
+/tmp/
+/config/config.exs
