@@ -1,5 +1,4 @@
 defmodule Miki.Users.Login do
-  import Plug.Conn
   import Miki.Users
   import Miki.Utils
 
@@ -7,10 +6,15 @@ defmodule Miki.Users.Login do
 
   def call(conn, _opts) do
     with %{"email" => email, "password" => password} <- conn.body_params do
-      user = get_user_by(:email, email)
+      user = get_user_fields_by(:email, email, [:password, :token, :id])
 
       if user && user.password == password do
-        conn |> put_resp_header("token", user.token) |> send_message("Successfully logged in.")
+        conn
+        |> send_json(%{
+          "message" => "Successfully logged in.",
+          "token" => user.token,
+          "id" => user.id
+        })
       else
         conn |> send_message("Invalid email or password.")
       end

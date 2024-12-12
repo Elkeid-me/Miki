@@ -21,7 +21,7 @@ defmodule Miki.Experiments do
     %{
       "title" => exp.title,
       "description" => exp.description,
-      "active?" => exp.active?,
+      "active" => exp.active?,
       "person_wanted" => exp.person_wanted,
       "person_already" => exp.person_already,
       "money_per_person" => exp.money_per_person,
@@ -34,11 +34,16 @@ defmodule Miki.Experiments do
     }
   end
 
-  def get_by_id(id),
-    do: Miki.Experiments |> where(id: ^id) |> Miki.Repo.all() |> unique()
+  def get_experiment_fields_by(by, value, fields),
+    do:
+      Miki.Experiments |> where(^[{by, value}]) |> select(^fields) |> Miki.Repo.all() |> unique()
 
-  def all(),
-    do: {Miki.Experiments |> Miki.Repo.aggregate(:count), Miki.Experiments |> Miki.Repo.all()}
+  def all_active() do
+    query = Miki.Experiments |> where(active?: true)
+
+    {query |> Miki.Repo.aggregate(:count),
+     query |> order_by(desc: :time_modified) |> Miki.Repo.all()}
+  end
 
   def new_experiment(title, description, person_wanted, money_per_person, creator_id) do
     time_created = current_time()
@@ -57,5 +62,13 @@ defmodule Miki.Experiments do
       creator_id: creator_id
     }
     |> Miki.Repo.insert()
+  end
+
+  def update(new_info, id) do
+    Miki.Experiments
+    |> where(id: ^id)
+    |> Miki.Repo.one!()
+    |> Ecto.Changeset.cast(new_info, [:active, :title, :description, :person_wanted, :money_per_person])
+    |> Miki.Repo.update()
   end
 end

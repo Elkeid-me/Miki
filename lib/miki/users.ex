@@ -12,8 +12,8 @@ defmodule Miki.Users do
     field(:register_time, :utc_datetime)
   end
 
-  def get_user_by(by, value),
-    do: Miki.Users |> where(^by == ^value) |> Miki.Repo.all() |> unique()
+  def get_user_fields_by(by, value, fields),
+    do: Miki.Users |> where(^[{by, value}]) |> select(^fields) |> Miki.Repo.all() |> unique()
 
   def username_exists?(username),
     do: Miki.Users |> where(username: ^username) |> Miki.Repo.aggregate(:count) > 0

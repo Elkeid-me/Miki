@@ -10,7 +10,7 @@ defmodule Miki.Users.Profile do
       nil ->
         with [token] <- get_req_header(conn, "token"),
              %{username: username, email: email, nickname: nickname, id: id} <-
-               get_user_by(:token, token) do
+               get_user_fields_by(:token, token, [:username, :email, :nickname, :id]) do
           conn
           |> send_json(%{
             "username" => username,
@@ -18,11 +18,13 @@ defmodule Miki.Users.Profile do
             "nickname" => nickname,
             "id" => id
           })
+        else
+          _ -> conn |> send_message("Invalid parameters.")
         end
 
       id ->
         with %{username: username, email: email, nickname: nickname, id: id} <-
-               get_user_by(:id, id) do
+               get_user_fields_by(:id, id, [:username, :email, :nickname, :id]) do
           conn
           |> send_json(%{
             "username" => username,

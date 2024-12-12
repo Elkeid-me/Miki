@@ -19,7 +19,7 @@ defmodule Miki.Router do
   get("/users/profile", to: Miki.Users.Profile)
 
   get "/experiments" do
-    {count, exps} = Miki.Experiments.all()
+    {count, exps} = Miki.Experiments.all_active()
 
     conn
     |> send_json(%{
@@ -29,6 +29,7 @@ defmodule Miki.Router do
   end
 
   post("/experiments/create", to: Miki.Experiments.Create)
+  post("/experiments/edit/:id", to: Miki.Experiments.Edit)
 
   match(_, do: conn |> send_resp(404, "Requested API not exists, or the method is wrong."))
 end

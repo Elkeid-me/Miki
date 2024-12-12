@@ -8,7 +8,7 @@ defmodule Miki.Experiments.Create do
 
   def call(conn, _opts) do
     with [token] <- get_req_header(conn, "token"),
-         %{id: id} <- get_user_by(:token, token),
+         %{id: id} <- get_user_fields_by(:token, token, [:id]),
          %{
            "title" => title,
            "description" => description,

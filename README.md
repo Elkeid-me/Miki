@@ -1,6 +1,6 @@
 # Miki
 
-Miki，[PKU 直聘](https://github.com/chyyy510/SE_Project)的下一代后端。
+Miki，[PKU 直聘](https://github.com/chyyy510/SE_Project)的下一代后端。网络部分使用 Plug 库，数据库部分使用 Ecto 库。
 
 ## 配置开发环境
 
@@ -64,12 +64,14 @@ mix run --no-halt
 ```
 ## 数据传输标准
 
+**由于 Elixir `Map` 的特性，以下 JSON 的字段*顺序*可能与生产环境不同**
+
 ### 用户登录
 
 - API：`<host>:<port>/users/login`（例如 `127.0.0.1:8080/users/login`）
 - 方法：POST
   - header
-    - `Content-Type`: `application/json`
+    - `content-type`: `application/json`
   - body
     ```json
     {
@@ -80,21 +82,15 @@ mix run --no-halt
 - 返回
   - header
     - status: `200`
-    - `Content-Type`: `application/json`
+    - `content-type`: `application/json`
   - body
 
     登录成功：
     ```json
     {
-      "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NzQ3NTc2LCJpYXQiOjE3Mjk3NDcyNzYsImp0aSI6ImJhMWRhOTMyMWJmYjQyOWVhZTJiNDBmOGFhOTdhZDY2IiwidXNlcl9pZCI6MX0.YKAtBt7fAzr8Q8cenyrJfrCAuMWb41co22okeZ1zuoo",
-
-      "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyOTgzMzY3NiwiaWF0IjoxNzI5NzQ3Mjc2LCJqdGkiOiI3YjdmYzc4YzU1MTc0ODUzOGY1ZGFmMDA2MTk0Y2ExYyIsInVzZXJfaWQiOjF9.TWVHrAkGZlQFEhEGgENiA_V75Fh_EVRcr1kdAiusF_0",
-
-      "user": {
-          "email": "alice@gmail.com",
-          "is_active": true,
-          "username": "alice"
-      }
+      "message": "Successfully logged in.",
+      "id": 1,
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NzQ3NTc2LCJpYXQiOjE3Mjk3NDcyNzYsImp0aSI6ImJhMWRhOTMyMWJmYjQyOWVhZTJiNDBmOGFhOTdhZDY2IiwidXNlcl9pZCI6MX0.YKAtBt7fAzr8Q8cenyrJfrCAuMWb41co22okeZ1zuoo"
     }
     ```
     登录失败（电子邮件不存在，或密码错误）：
@@ -110,7 +106,7 @@ mix run --no-halt
 - API：`<host>:<port>/users/register`
 - 方法：POST
   - header
-    - `Content-Type`: `application/json`
+    - `content-type`: `application/json`
   - body
     ```json
     {
@@ -123,12 +119,15 @@ mix run --no-halt
 - 返回
   - header
     - status：`200`
-    - `Content-Type`: `application/json`
+    - `content-type`: `application/json`
   - body
 
     注册成功：
     ```json
-    { "message": "Successfully registered." }
+    {
+      "message": "Successfully registered.",
+      "token": ""
+    }
     ```
     注册失败：
     ```json
@@ -137,6 +136,10 @@ mix run --no-halt
     或
     ```json
     { "message": "Username already exists." }
+    ```
+    未知原因的注册错误：
+    ```json
+    { "message": "Failed to register." }
     ```
     不合法的参数（例如没有 `password`）：
     ```json
@@ -150,11 +153,11 @@ mix run --no-halt
 - API：`<host>:<port>/users/profile`
 - 方法：GET
   - header
-    -
+    - `token`：`<token>`
 - 返回
   - header
     - status：`200`
-    - `Content-Type`: `application/json`
+    - `content-type`: `application/json`
   - body
     ```json
     {
@@ -165,17 +168,14 @@ mix run --no-halt
     }
     ```
 
-
-### 当前用户主页信息
-
 ### 某个用户主页信息
 
-- API：`<host>:<port>/users/profile/<id>`
+- API：`<host>:<port>/users/profile/<用户 id>`
 - 方法：GET
 - 返回
   - header
     - status：`200`
-    - `Content-Type`: `application/json`
+    - `content-type`: `application/json`
   - body
 
     如果用户存在：
@@ -192,58 +192,125 @@ mix run --no-halt
     { }
     ```
 
-### 所有用户信息（仅调试用）
-
-- API：`<host>:<port>/users`
-- 方法：GET
-- 返回
-  - status：`200`
-  - `Content-Type`: `application/json`
-  - body
-    ```json
-
-    ```
-
 ### 所有实验信息：
 
 - API：`<host>:<port>/experiments`
 - 方法：GET
+- 返回
+  - header
+    - status：`200`
+    - `content-type`: `application/json`
+  - body
+    ```json
+    {
+      "count": 4,
+      "results": [
+        {
+          "active": true,
+          "creator_id": 1,
+          "description": "?",
+          "id": 1,
+          "money_left": "0", // decimal……
+          "money_paid": "0",
+          "money_per_person": "114514",
+          "person_already": 0,
+          "person_wanted": 1,
+          "time_created": "2024-12-12T12:03:52Z", // UTC 时间，即零时区。
+          "time_modified": "2024-12-12T12:03:52Z",
+          "title": "哇袄"
+        },
+        {
+          "active": true,
+          "creator_id": 2,
+          "description": "?",
+          "id": 2,
+          "money_left": "0",
+          "money_paid": "0",
+          "money_per_person": "114514",
+          "person_already": 0,
+          "person_wanted": 1,
+          "time_created": "2024-12-12T12:05:31Z",
+          "time_modified": "2024-12-12T12:05:31Z",
+          "title": "哇袄"
+        }
+      ]
+    }
+    ```
 
 ### 创建实验
 
 - API：`<host>:<port>/experiments/create`
 - 方法：POST
   - header
-    - `Content-Type`: `application/json`
-    - ``
+    - `content-type`: `application/json`
+    - `token`：`<token>`
   - body
     ```json
     {
-      "title": "xxx",
-      "description": "xxx",
+      "title": "哇袄",
+      "description": "?",
       "person_wanted": 20,
       "money_per_person": 10
     }
     ```
 - 返回
-  - status：`200`
-  - `Content-Type`: `application/json`
+  - header
+    - status：`200`
+    - `content-type`: `application/json`
+  - body
 
-### 参加实验
+  创建成功：
+    ```json
+    {
+      "active": true,
+      "creator_id": 2,
+      "description": "?",
+      "id": 2,
+      "money_left": "0",
+      "money_paid": "0",
+      "money_per_person": "114514",
+      "person_already": 0,
+      "person_wanted": 1,
+      "time_created": "2024-12-12T12:05:31Z", // UTC 时间，即零时区。
+      "time_modified": "2024-12-12T12:05:31Z",
+      "title": "哇袄"
+    }
+    ```
+    未知原因的创建错误：
+    ```json
+    { "message": "Failed to create experiment." }
+    ```
+    不合法的参数（例如没有 `description`）：
+    ```json
+    { "message": "Invalid parameters." }
 
-- API：`<host>:<port>/experiments/participate`
+### 编辑实验
+
+- API：`<host>:<port>/experiments/edit`
 - 方法：POST
   - header
-    - `Content-Type`: `application/json`
-    - ``
+    - `content-type`: `application/json`
+    - `token`：`<token>`
   - body
     ```json
     {
-      "title": "xxx",
-      "description": "xxx",
+      "active": true, // 或者 false，如果想暂停实验
+      "title": "哇袄",
+      "description": "?",
       "person_wanted": 20,
       "money_per_person": 10
     }
     ```
+  - 注意：以上五个字段不必同时存在。如果只想更新 `title`，则可以
+    ```json
+    { "title": "哇袄" }
+    ```
+
+### 参加实验
+
+- API：`<host>:<port>/experiments/participate/<实验 id>`
+- 方法：GET
+  - header
+    - `token`：`<token>`
 
 ### 搜索实验
