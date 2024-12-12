@@ -1,6 +1,14 @@
 defmodule Miki.Router do
   use Plug.Router
 
+  plug(Plug.Logger, log: :debug)
+
+  plug(Plug.Parsers,
+    parsers: [:urlencoded, :json],
+    pass: ["application/json"],
+    json_decoder: Jason
+  )
+
   plug(:match)
   plug(:dispatch)
 
