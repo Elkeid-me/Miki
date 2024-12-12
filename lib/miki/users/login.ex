@@ -1,4 +1,4 @@
-defmodule Miki.Plug.Login do
+defmodule Miki.Users.Login do
   import Miki.Users
   import Miki.Utils.Send
 

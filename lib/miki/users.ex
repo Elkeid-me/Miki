@@ -22,6 +22,12 @@ defmodule Miki.Users do
   def get_user_by_email(email),
     do: Miki.Users |> where(email: ^email) |> Miki.Repo.all() |> post_process_query()
 
+  def username_exists?(username),
+    do: Miki.Users |> where(username: ^username) |> Miki.Repo.aggregate(:count) == 1
+
+  def email_exists?(email),
+    do: Miki.Users |> where(email: ^email) |> Miki.Repo.aggregate(:count) == 1
+
   def add_user(username, nickname, email, password),
     do:
       %Miki.Users{username: username, nickname: nickname, email: email, password: password}

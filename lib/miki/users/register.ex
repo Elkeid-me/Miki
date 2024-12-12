@@ -1,4 +1,4 @@
-defmodule Miki.Plug.Register do
+defmodule Miki.Users.Register do
   import Miki.Users
   import Miki.Utils.Send
 
@@ -15,10 +15,10 @@ defmodule Miki.Plug.Register do
              "password" => password
            } <- conn.body_params do
         cond do
-          get_user_by_name(username) ->
+          username_exists?(username) ->
             conn |> send_message("Username already exists.")
 
-          get_user_by_email(email) ->
+          email_exists?(email) ->
             conn |> send_message("Email already exists.")
 
           true ->

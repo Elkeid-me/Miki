@@ -12,9 +12,9 @@ defmodule Miki.Router do
   plug(:match)
   plug(:dispatch)
 
-  forward("/users/register", to: Miki.Plug.Register)
+  forward("/users/register", to: Miki.Users.Register)
 
-  forward("/users/login", to: Miki.Plug.Login)
+  forward("/users/login", to: Miki.Users.Login)
 
   match _ do
     conn |> send_resp(404, "404")
