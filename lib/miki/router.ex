@@ -1,5 +1,6 @@
 defmodule Miki.Router do
   use Plug.Router
+  import Miki.Utils
 
   plug(Plug.Logger, log: :debug)
 
@@ -16,9 +17,18 @@ defmodule Miki.Router do
   post("/users/login", to: Miki.Users.Login)
   get("/users/profile/:id", to: Miki.Users.Profile)
   get("/users/profile", to: Miki.Users.Profile)
-  post("experiments/create", to: Miki.Experiments.Create)
 
-  match _ do
-    conn |> send_resp(404, "Requested API not exists, or the method is wrong.")
+  get "/experiments" do
+    {count, exps} = Miki.Experiments.all()
+
+    conn
+    |> send_json(%{
+      "count" => count,
+      "results" => exps |> Enum.map(fn exp -> Miki.Experiments.process_experiment(exp) end)
+    })
   end
+
+  post("/experiments/create", to: Miki.Experiments.Create)
+
+  match(_, do: conn |> send_resp(404, "Requested API not exists, or the method is wrong."))
 end

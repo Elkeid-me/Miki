@@ -1,6 +1,6 @@
 defmodule Miki.Users.Login do
   import Miki.Users
-  import Miki.Utils.Send
+  import Miki.Utils
 
   def init(options), do: options
 

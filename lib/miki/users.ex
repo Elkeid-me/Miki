@@ -1,13 +1,14 @@
 defmodule Miki.Users do
   use Ecto.Schema
   import Ecto.Query
-  import Miki.Utils.UniqueQuery
+  import Miki.Utils
 
   schema "users" do
     field(:username, :string)
     field(:nickname, :string)
     field(:email, :string)
     field(:password, :string)
+    field(:register_time, :utc_datetime)
   end
 
   def get_user_by_id(id),
@@ -27,6 +28,12 @@ defmodule Miki.Users do
 
   def add_user(username, nickname, email, password),
     do:
-      %Miki.Users{username: username, nickname: nickname, email: email, password: password}
+      %Miki.Users{
+        username: username,
+        nickname: nickname,
+        email: email,
+        password: password,
+        register_time: current_time()
+      }
       |> Miki.Repo.insert()
 end
