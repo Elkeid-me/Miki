@@ -1,4 +1,5 @@
 defmodule Miki.Users.Profile do
+  import Plug.Conn
   import Miki.Users
   import Miki.Utils
 
@@ -7,10 +8,21 @@ defmodule Miki.Users.Profile do
   def call(conn, _opts) do
     case conn.params["id"] do
       nil ->
-        conn |> send_message("OK?")
+        with [token] <- get_req_header(conn, "token"),
+             %{username: username, email: email, nickname: nickname, id: id} <-
+               get_user_by(:token, token) do
+          conn
+          |> send_json(%{
+            "username" => username,
+            "email" => email,
+            "nickname" => nickname,
+            "id" => id
+          })
+        end
 
       id ->
-        with %{username: username, email: email, nickname: nickname, id: id} <- get_user_by_id(id) do
+        with %{username: username, email: email, nickname: nickname, id: id} <-
+               get_user_by(:id, id) do
           conn
           |> send_json(%{
             "username" => username,

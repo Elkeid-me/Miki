@@ -19,8 +19,13 @@ defmodule Miki.Users.Register do
           conn |> send_message("Email already exists.")
 
         true ->
-          add_user(username, nickname, email, password)
-          conn |> send_message("Successfully registered.")
+          case add_user(username, nickname, email, password) do
+            {:ok, post} ->
+              conn |> send_json(%{"message" => "Successfully registered.", "token" => post.token})
+
+            {:error, _} ->
+              conn |> send_message("Failed to register.")
+          end
       end
     else
       _ -> conn |> send_message("Invalid parameters.")

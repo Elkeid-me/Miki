@@ -7,6 +7,7 @@ defmodule Miki.Repo.Migrations.CreateUsers do
       add(:nickname, :string)
       add(:email, :string)
       add(:password, :string)
+      add(:token, :string)
       add(:register_time, :utc_datetime)
     end
   end
