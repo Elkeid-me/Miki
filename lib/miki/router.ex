@@ -12,11 +12,13 @@ defmodule Miki.Router do
   plug(:match)
   plug(:dispatch)
 
-  forward("/users/register", to: Miki.Users.Register)
-
-  forward("/users/login", to: Miki.Users.Login)
+  post("/users/register", to: Miki.Users.Register)
+  post("/users/login", to: Miki.Users.Login)
+  get("/users/profile/:id", to: Miki.Users.Profile)
+  get("/users/profile", to: Miki.Users.Profile)
+  post("experiments/create", to: Miki.Experiments.Create)
 
   match _ do
-    conn |> send_resp(404, "404")
+    conn |> send_resp(404, "Requested API not exists, or the method is wrong.")
   end
 end
