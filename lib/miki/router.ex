@@ -30,7 +30,7 @@ defmodule Miki.Router do
 
   post("/experiments/create", to: Miki.Experiments.Create)
   post("/experiments/edit/:id", to: Miki.Experiments.Edit)
-  post("/experiments/participate/:id", to: Miki.Experiments.Participate)
+  get("/experiments/participate/:id", to: Miki.Experiments.Participate)
 
   match(_, do: conn |> send_resp(404, "Requested API not exists, or the method is wrong."))
 end

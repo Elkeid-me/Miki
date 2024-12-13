@@ -86,7 +86,7 @@ defmodule Miki.Experiments do
     user = Miki.Users |> Miki.Repo.get(user_id) |> Miki.Repo.preload(:experiments)
     experiment = Miki.Experiments |> Miki.Repo.get(exp_id)
 
-    if experiment.person_wanted < experiment.person_already do
+    if experiment.person_wanted > experiment.person_already do
       case user
            |> Ecto.Changeset.change()
            |> Ecto.Changeset.put_assoc(:experiments, [experiment | user.experiments])
