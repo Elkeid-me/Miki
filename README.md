@@ -1,6 +1,6 @@
 # Miki
 
-Miki，[PKU 直聘](https://github.com/chyyy510/SE_Project)的下一代后端。网络部分使用 Plug 库，数据库部分使用 Ecto 库。
+Miki，[SE_Project](https://github.com/chyyy510/SE_Project)的测试用后端。
 
 ## 配置开发环境
 
