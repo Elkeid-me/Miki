@@ -21,7 +21,12 @@ defmodule Miki.Users.Register do
         true ->
           case add_user(username, nickname, email, password) do
             {:ok, post} ->
-              conn |> send_json(%{"message" => "Successfully registered.", "token" => post.token})
+              conn
+              |> send_json(%{
+                "message" => "Successfully registered.",
+                "id" => post.id,
+                "token" => post.token
+              })
 
             {:error, _} ->
               conn |> send_message("Failed to register.")

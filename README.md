@@ -126,7 +126,8 @@ mix run --no-halt
     ```json
     {
       "message": "Successfully registered.",
-      "token": ""
+      "id": 1,
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NzQ3NTc2LCJpYXQiOjE3Mjk3NDcyNzYsImp0aSI6ImJhMWRhOTMyMWJmYjQyOWVhZTJiNDBmOGFhOTdhZDY2IiwidXNlcl9pZCI6MX0.YKAtBt7fAzr8Q8cenyrJfrCAuMWb41co22okeZ1zuoo"
     }
     ```
     注册失败：
@@ -287,6 +288,7 @@ mix run --no-halt
     不合法的参数（例如没有 `description`）：
     ```json
     { "message": "Invalid parameters." }
+    ```
 
 ### 编辑实验
 
@@ -324,6 +326,9 @@ mix run --no-halt
     { "message": "Failed to create experiment." }
     ```
     不合法的参数（如没有 `token`，或 `token` 代表的用户不是 `id` 实验的创建者）
+    ```json
+    { "message": "Invalid parameters." }
+    ```
 
 ### 参加实验
 
@@ -351,3 +356,5 @@ mix run --no-halt
     ```
 
 ### 搜索实验
+
+在鸽
