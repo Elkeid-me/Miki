@@ -19,7 +19,7 @@ defmodule Miki.Users.Login do
         conn |> send_message("Invalid email or password.")
       end
     else
-      _ -> conn |> send_message("Invalid parameters.")
+      _ -> conn |> send_message("Invalid parameters.", 401)
     end
   end
 end

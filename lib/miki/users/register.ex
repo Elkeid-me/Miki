@@ -28,7 +28,7 @@ defmodule Miki.Users.Register do
           end
       end
     else
-      _ -> conn |> send_message("Invalid parameters.")
+      _ -> conn |> send_message("Invalid parameters.", 401)
     end
   end
 end

@@ -20,7 +20,7 @@ defmodule Miki.Experiments.Create do
         {:error, _} -> conn |> send_message("Failed to create experiment.")
       end
     else
-      _ -> conn |> send_message("Invalid parameters.")
+      _ -> conn |> send_message("Invalid parameters.", 401)
     end
   end
 end

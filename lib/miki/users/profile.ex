@@ -19,7 +19,7 @@ defmodule Miki.Users.Profile do
             "id" => id
           })
         else
-          _ -> conn |> send_message("Invalid parameters.")
+          _ -> conn |> send_message("Invalid parameters.", 401)
         end
 
       id ->

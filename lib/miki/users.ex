@@ -10,6 +10,7 @@ defmodule Miki.Users do
     field(:password, :string)
     field(:token, :string)
     field(:register_time, :utc_datetime)
+    many_to_many(:experiments, Miki.Experiments, join_through: "users_experiments", join_keys: [user_id: :id, experiment_id: :id])
   end
 
   def get_user_fields_by(by, value, fields),

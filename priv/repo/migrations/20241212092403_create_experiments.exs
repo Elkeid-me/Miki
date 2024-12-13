@@ -5,7 +5,7 @@ defmodule Miki.Repo.Migrations.CreateExperiments do
     create table(:experiments) do
       add(:title, :string)
       add(:description, :longtext)
-      add(:active?, :boolean)
+      add(:active, :boolean)
       add(:person_wanted, :integer)
       add(:person_already, :integer)
       add(:money_per_person, :decimal)

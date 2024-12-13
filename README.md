@@ -81,7 +81,7 @@ mix run --no-halt
     ```
 - 返回
   - header
-    - status: `200`
+    - status: `200` 或 `401`（仅限 `Invalid parameters` 情形）
     - `content-type`: `application/json`
   - body
 
@@ -118,7 +118,7 @@ mix run --no-halt
     ```
 - 返回
   - header
-    - status：`200`
+    - status：`200` 或 `401`（仅限 `Invalid parameters` 情形）
     - `content-type`: `application/json`
   - body
 
@@ -146,8 +146,6 @@ mix run --no-halt
     { "message": "Invalid parameters." }
     ```
 
-### 更新 token
-
 ### 当前用户主页信息
 
 - API：`<host>:<port>/users/profile`
@@ -156,9 +154,11 @@ mix run --no-halt
     - `token`：`<token>`
 - 返回
   - header
-    - status：`200`
+    - status：`200` 或 `401`（仅限 `Invalid parameters` 情形）
     - `content-type`: `application/json`
   - body
+
+    成功：
     ```json
     {
       "username": "alice",
@@ -167,10 +167,14 @@ mix run --no-halt
       "id": 46531
     }
     ```
+    不合法的参数（例如没有 `token`）：
+    ```json
+    { "message": "Invalid parameters." }
+    ```
 
 ### 某个用户主页信息
 
-- API：`<host>:<port>/users/profile/<用户 id>`
+- API：`<host>:<port>/users/profile/<id>`
 - 方法：GET
 - 返回
   - header
@@ -178,7 +182,7 @@ mix run --no-halt
     - `content-type`: `application/json`
   - body
 
-    如果用户存在：
+    如果 id 为 `<id>` 的用户存在：
     ```json
     {
       "username": "alice",
@@ -255,7 +259,7 @@ mix run --no-halt
     ```
 - 返回
   - header
-    - status：`200`
+    - status：`200` 或 `401`（仅限 `Invalid parameters` 情形）
     - `content-type`: `application/json`
   - body
 
@@ -305,12 +309,44 @@ mix run --no-halt
     ```json
     { "title": "哇袄" }
     ```
+- 返回
+  - header
+    - status：`200` 或 `401`（仅限 `Invalid parameters` 情形）
+    - `content-type`: `application/json`
+  - body
+
+    成功：
+    ```json
+    { "message": "Expriment edited successfully." }
+    ```
+    未知原因的编辑失败：
+    ```json
+    { "message": "Failed to create experiment." }
+    ```
+    不合法的参数（如没有 `token`，或 `token` 代表的用户不是 `id` 实验的创建者）
 
 ### 参加实验
 
-- API：`<host>:<port>/experiments/participate/<实验 id>`
+- API：`<host>:<port>/experiments/participate/<id>`
 - 方法：GET
   - header
     - `token`：`<token>`
+- 返回
+  - header
+    - status：`200` 或 `401`（仅限 `Invalid parameters` 情形）
+    - `content-type`: `application/json`
+  - body
 
+    参与成功：
+    ```json
+    { "message": "Participate in successfully." }
+    ```
+    未知原因的失败：
+    ```json
+    { "message": "Failed to participate." }
+    ```
+    不合法的参数（如没有 `token`，或 `id` 代表的实验不存在）
+    ```json
+    { "message": "Invalid parameters." }
+    ```
 ### 搜索实验
