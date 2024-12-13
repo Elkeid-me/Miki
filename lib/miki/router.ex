@@ -4,6 +4,13 @@ defmodule Miki.Router do
 
   plug(Plug.Logger, log: :debug)
 
+  plug(Corsica,
+    origins: "*",
+    allow_credentials: true,
+    allow_methods: ["OPTIONS", "GET", "POST"],
+    allow_headers: :all
+  )
+
   plug(Plug.Parsers,
     parsers: [:urlencoded, :json],
     pass: ["application/json"],

@@ -23,7 +23,8 @@ defmodule Miki.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:ecto_sql, "~> 3.0"},
       {:myxql, "~> 0.7"},
-      {:jason, "~> 1.0"}
+      {:jason, "~> 1.0"},
+      {:corsica, "~> 2.0"}
     ]
   end
 end
