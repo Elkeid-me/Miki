@@ -19,7 +19,7 @@ defmodule Miki.Users.Register do
           conn |> send_message("Email already exists.")
 
         true ->
-          case add_user(username, nickname, email, password) do
+          case new(username, nickname, email, password) do
             {:ok, post} ->
               conn
               |> send_json(%{

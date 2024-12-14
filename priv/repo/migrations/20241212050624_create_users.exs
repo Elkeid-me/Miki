@@ -10,5 +10,8 @@ defmodule Miki.Repo.Migrations.CreateUsers do
       add(:token, :string)
       add(:register_time, :utc_datetime)
     end
+
+    create(unique_index(:users, [:username]))
+    create(unique_index(:users, [:email]))
   end
 end

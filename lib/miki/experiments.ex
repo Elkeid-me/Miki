@@ -14,7 +14,7 @@ defmodule Miki.Experiments do
     field(:money_left, :decimal)
     field(:time_created, :utc_datetime)
     field(:time_modified, :utc_datetime)
-    field(:creator_id, :integer)
+    belongs_to(:creator, Miki.Users, foreign_key: :creator_id)
 
     many_to_many(:users, Miki.Users,
       join_through: "users_experiments",
@@ -39,9 +39,10 @@ defmodule Miki.Experiments do
     }
   end
 
-  def get_experiment_fields_by(by, value, fields),
-    do:
-      Miki.Experiments |> where(^[{by, value}]) |> select(^fields) |> Miki.Repo.all() |> unique()
+  def active?(id), do: Miki.Experiments |> where(id: ^id) |> select([:active]) |> Miki.Repo.one()
+
+  def creator_id(id),
+    do: Miki.Experiments |> where(id: ^id) |> select([:creator_id]) |> Miki.Repo.one()
 
   def all_active() do
     query = Miki.Experiments |> where(active: true)
@@ -50,7 +51,7 @@ defmodule Miki.Experiments do
      query |> order_by(desc: :time_modified) |> Miki.Repo.all()}
   end
 
-  def new_experiment(title, description, person_wanted, money_per_person, creator_id) do
+  def new(title, description, person_wanted, money_per_person, creator_id) do
     time_created = current_time()
 
     %Miki.Experiments{
@@ -83,13 +84,21 @@ defmodule Miki.Experiments do
       |> Miki.Repo.update()
 
   def add_volunteer(user_id, exp_id) do
-    user = Miki.Users |> Miki.Repo.get(user_id) |> Miki.Repo.preload(:experiments)
-    experiment = Miki.Experiments |> Miki.Repo.get(exp_id)
+    user =
+      Miki.Users
+      |> where(id: ^user_id)
+      |> Miki.Repo.one()
+      |> Miki.Repo.preload(:experiments_participate_in)
+
+    experiment = Miki.Experiments |> where(id: ^exp_id) |> Miki.Repo.one()
 
     if experiment.person_wanted > experiment.person_already do
       case user
            |> Ecto.Changeset.change()
-           |> Ecto.Changeset.put_assoc(:experiments, [experiment | user.experiments])
+           |> Ecto.Changeset.put_assoc(
+             :experiments_participate_in,
+             [experiment | user.experiments_participate_in]
+           )
            |> Miki.Repo.update() do
         {:ok, _} ->
           experiment
@@ -97,7 +106,9 @@ defmodule Miki.Experiments do
             :person_already
           ])
           |> Miki.Repo.update()
-        error -> error
+
+        error ->
+          error
       end
     else
       {:error, 0}

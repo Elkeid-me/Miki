@@ -13,7 +13,7 @@ defmodule Miki.Repo.Migrations.CreateExperiments do
       add(:money_left, :decimal)
       add(:time_created, :utc_datetime)
       add(:time_modified, :utc_datetime)
-      add(:creator_id, :integer)
+      add(:creator_id, references(:users))
     end
   end
 end
