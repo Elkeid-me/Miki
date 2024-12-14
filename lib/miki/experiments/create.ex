@@ -8,14 +8,14 @@ defmodule Miki.Experiments.Create do
 
   def call(conn, _opts) do
     with [token] <- get_req_header(conn, "token"),
-         %{id: id} <- get_user_fields_by(:token, token, [:id]),
+         user_id when user_id != nil <- get_id_by_token(token),
          %{
            "title" => title,
            "description" => description,
            "person_wanted" => person_wanted,
            "money_per_person" => money_per_person
          } <- conn.body_params do
-      case new_experiment(title, description, person_wanted, money_per_person, id) do
+      case new(title, description, person_wanted, money_per_person, user_id) do
         {:ok, post} -> conn |> send_json(process_experiment(post))
         {:error, _} -> conn |> send_message("Failed to create experiment.")
       end

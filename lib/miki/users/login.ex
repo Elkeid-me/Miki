@@ -6,17 +6,11 @@ defmodule Miki.Users.Login do
 
   def call(conn, _opts) do
     with %{"email" => email, "password" => password} <- conn.body_params do
-      user = get_user_fields_by(:email, email, [:password, :token, :id])
-
-      if user && user.password == password do
-        conn
-        |> send_json(%{
-          "message" => "Successfully logged in.",
-          "token" => user.token,
-          "id" => user.id
-        })
+      with %Miki.Users{id: id, password: user_password, token: token}
+           when user_password == password <- get_id_password_token_by_email(email) do
+        conn |> send_json(%{"message" => "Successfully logged in.", "token" => token, "id" => id})
       else
-        conn |> send_message("Invalid email or password.")
+        _ -> conn |> send_message("Invalid email or password.")
       end
     else
       _ -> conn |> send_message("Invalid parameters.", 401)

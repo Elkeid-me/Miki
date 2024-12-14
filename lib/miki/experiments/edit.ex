@@ -9,9 +9,8 @@ defmodule Miki.Experiments.Edit do
   def call(conn, _opts) do
     with exp_id when exp_id != nil <- conn.params["id"],
          [token] <- get_req_header(conn, "token"),
-         %{id: user_id} <- get_user_fields_by(:token, token, [:id]),
-         %{creator_id: creator_id} when user_id == creator_id <-
-           get_experiment_fields_by(:id, exp_id, [:creator_id]) do
+         %{id: user_id} <- get_id_by_token(token),
+         %{creator_id: creator_id} when user_id == creator_id <- creator_id(exp_id) do
       case conn.body_params
            |> Map.take(["active", "title", "description", "person_wanted", "money_per_person"])
            |> update(exp_id) do
