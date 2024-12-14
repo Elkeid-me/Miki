@@ -18,14 +18,14 @@ defmodule Miki.Users.Instruction do
         with [token] <- get_req_header(conn, "token"),
              id when id != nil <- get_id_by_token(token) do
           user = instruction(id)
-          send_instru(conn, id, user)
+          conn |> send_instru(id, user)
         else
           _ -> conn |> send_json(%{})
         end
 
       id ->
         user = instruction(id)
-        send_instru(conn, id, user)
+        conn |> send_instru(id, user)
     end
   end
 end

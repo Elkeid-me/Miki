@@ -22,22 +22,47 @@ defmodule Miki.Experiments do
     )
   end
 
-  def process_experiment(exp) do
-    %{
-      "title" => exp.title,
-      "description" => exp.description,
-      "active" => exp.active,
-      "person_wanted" => exp.person_wanted,
-      "person_already" => exp.person_already,
-      "money_per_person" => exp.money_per_person,
-      "money_paid" => exp.money_paid,
-      "money_left" => exp.money_left,
-      "time_created" => exp.time_created,
-      "time_modified" => exp.time_modified,
-      "creator_id" => exp.creator_id,
-      "id" => exp.id
-    }
-  end
+  @doc """
+  提取实验的简要信息，转换为 Map。输入应为 %Experiment{}
+  """
+  def to_map(exp),
+    do:
+      exp
+      |> Map.take([
+        :title,
+        :description,
+        :active,
+        :person_wanted,
+        :person_already,
+        :money_per_person,
+        :money_paid,
+        :money_left,
+        :time_created,
+        :time_modified,
+        :creator_id,
+        :id
+      ])
+
+  def detail(id),
+    do:
+      Miki.Experiments
+      |> where(id: ^id)
+      |> select([
+        :title,
+        :description,
+        :active,
+        :person_wanted,
+        :person_already,
+        :money_per_person,
+        :money_paid,
+        :money_left,
+        :time_created,
+        :time_modified,
+        :creator_id,
+        :id
+      ])
+      |> Miki.Repo.one()
+      |> Miki.Repo.preload([:users, :creator])
 
   def active?(id), do: Miki.Experiments |> where(id: ^id) |> select([:active]) |> Miki.Repo.one()
 

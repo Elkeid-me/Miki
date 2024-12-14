@@ -8,10 +8,14 @@ Miki，[SE_Project](https://github.com/chyyy510/SE_Project)的测试用后端。
 2. 安装 [Elixir](https://elixir-lang.org/) 1.17；
 
    对于 Windows，安装以上两者是简单的。对于 Linux（仅在 Ubuntu 24.04 测试），请依 [Install Elixir](https://elixir-lang.org/install.html#install-scripts) 操作。
-3. 克隆本仓库；
-4. 运行 `mix deps.get` 获取依赖库；
-5. 假定你已经配置好了 MySQL。
-6. 注意 `config` 目录。在其中新建 `config.exs` 文件，填写服务器配置。
+3. （可选）为 Hex 包管理器配置中国大陆镜像源（又拍云）
+   ```bash
+   mix hex.config mirror_url https://hexpm.upyun.com
+   ```
+4. 克隆本仓库；
+5. 运行 `mix deps.get` 获取依赖库；
+6. 假定你已经配置好了 MySQL。
+7. 注意 `config` 目录。在其中新建 `config.exs` 文件，填写服务器配置。
 
    配置示例：
 
@@ -63,8 +67,6 @@ mix run --no-halt
 ./_build/prod/rel/miki/bin/miki start
 ```
 ## 数据传输标准
-
-**由于 Elixir `Map` 的特性，以下 JSON 的字段*顺序*可能与生产环境不同**
 
 ### 用户登录
 
@@ -147,9 +149,9 @@ mix run --no-halt
     { "message": "Invalid parameters." }
     ```
 
-### 当前用户主页信息
+### 当前用户简略信息
 
-- API：`<host>:<port>/users/profile`
+- API：`<host>:<port>/users/instruction`
 - 方法：GET
   - header
     - `token`：`<token>`
@@ -170,12 +172,128 @@ mix run --no-halt
     ```
     不合法的参数（例如没有 `token`）：
     ```json
-    { "message": "Invalid parameters." }
+    { }
     ```
 
-### 某个用户主页信息
+### 某个用户简略信息
 
 - API：`<host>:<port>/users/profile/<id>`
+- 方法：GET
+- 返回
+  - header
+    - status：`200`
+    - `content-type`: `application/json`
+  - body
+
+    如果 id 为 `<id>` 的用户存在：
+    ```json
+    {
+      "id": 1,
+      "username": "e",
+      "experiments_created": [
+        {
+          "active": true,
+          "id": 1,
+          "description": "Desc 1",
+          "title": "Exp 1",
+          "creator_id": 1,
+          "money_left": "0",
+          "money_paid": "0",
+          "money_per_person": "10",
+          "person_already": 1,
+          "person_wanted": 10,
+          "time_created": "2024-12-14T07:57:46Z",
+          "time_modified": "2024-12-14T07:57:46Z"
+        }
+      ],
+      "experiments_participate_in": [
+        {
+          "active": true,
+          "id": 1,
+          "description": "Desc 1",
+          "title": "Exp 1",
+          "creator_id": 1,
+          "money_left": "0",
+          "money_paid": "0",
+          "money_per_person": "10",
+          "person_already": 1,
+          "person_wanted": 10,
+          "time_created": "2024-12-14T07:57:46Z",
+          "time_modified": "2024-12-14T07:57:46Z"
+        }
+      ],
+      "email": "e",
+      "nickname": "e",
+      "register_time": "2024-12-14T07:57:15Z"
+    }
+    ```
+    用户不存在：
+    ```json
+    { }
+    ```
+
+### 当前用户详细信息
+
+- API：`<host>:<port>/users/profile`
+- 方法：GET
+  - header
+    - `token`：`<token>`
+- 返回
+  - header
+    - status：`200` 或 `401`（仅限 `Invalid parameters` 情形）
+    - `content-type`: `application/json`
+  - body
+
+    成功：
+    ```json
+    {
+      "id": 1,
+      "username": "e",
+      "experiments_created": [
+        {
+          "active": true,
+          "id": 1,
+          "description": "Desc 1",
+          "title": "Exp 1",
+          "creator_id": 1,
+          "money_left": "0",
+          "money_paid": "0",
+          "money_per_person": "10",
+          "person_already": 1,
+          "person_wanted": 10,
+          "time_created": "2024-12-14T07:57:46Z",
+          "time_modified": "2024-12-14T07:57:46Z"
+        }
+      ],
+      "experiments_participate_in": [
+        {
+          "active": true,
+          "id": 1,
+          "description": "Desc 1",
+          "title": "Exp 1",
+          "creator_id": 1,
+          "money_left": "0",
+          "money_paid": "0",
+          "money_per_person": "10",
+          "person_already": 1,
+          "person_wanted": 10,
+          "time_created": "2024-12-14T07:57:46Z",
+          "time_modified": "2024-12-14T07:57:46Z"
+        }
+      ],
+      "email": "e",
+      "nickname": "e",
+      "register_time": "2024-12-14T07:57:15Z"
+    }
+    ```
+    不合法的参数（例如没有 `token`）：
+    ```json
+    { }
+    ```
+
+### 某个用户详细信息
+
+- API：`<host>:<port>/users/instruction/<id>`
 - 方法：GET
 - 返回
   - header
@@ -240,6 +358,53 @@ mix run --no-halt
         }
       ]
     }
+    ```
+
+### 单个实验的详细信息
+
+- API：`<host>:<port>/experiments/<id>`
+- 方法：GET
+- 返回
+  - header
+    - status：`200`
+    - `content-type`: `application/json`
+  - body
+
+    如果 id 为 `<id>` 的实验存在：
+    ```json
+    {
+      "active": true,
+      "id": 1,
+      "description": "Desc 1",
+      "title": "Exp 1",
+      "person_wanted": 10,
+      "person_already": 1,
+      "money_per_person": "10",
+      "money_paid": "0",
+      "money_left": "0",
+      "time_created": "2024-12-14T07:57:46Z",
+      "time_modified": "2024-12-14T07:57:46Z",
+      "creator": {
+        "id": 1,
+        "username": "e",
+        "email": "e",
+        "nickname": "e"
+      },
+      "creator_id": 1,
+      "users": [
+        {
+          "id": 1,
+          "username": "elkeid",
+          "email": "elkeid@gmail.com",
+          "nickname": "elkeid"
+        }
+      ]
+    }
+    ```
+
+    实验不存在：
+    ```json
+    { }
     ```
 
 ### 创建实验

@@ -29,7 +29,12 @@ defmodule Miki.Users do
       |> Miki.Repo.one()
 
   @doc """
-  用 `id` 获取用户的更详细信息。除 `instruction` 外，还有注册时间、参与的实验、创建的实验。用户不存在时返回 `nil`
+  类似 `Experiments.to_map/1`
+  """
+  def to_map(user), do: user |> Map.take([:id, :username, :email, :nickname])
+
+  @doc """
+  用 `id` 获取用户的更详细信息。除 `instruction` 外，还有注册时间、参与的实验、创建的实验。直接返回 %Miki.User{}。用户不存在时返回 `nil`
   """
   def profile(id),
     do:
