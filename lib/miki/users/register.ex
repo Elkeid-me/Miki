@@ -1,6 +1,5 @@
 defmodule Miki.Users.Register do
-  import Miki.Users
-  import Miki.Utils
+  alias(Miki.{Users, Utils})
 
   def init(options), do: options
 
@@ -12,28 +11,28 @@ defmodule Miki.Users.Register do
            "password" => password
          } <- conn.body_params do
       cond do
-        username_exists?(username) ->
-          conn |> send_message("Username already exists.")
+        Users.username_exists?(username) ->
+          conn |> Utils.send_message("Username already exists.")
 
-        email_exists?(email) ->
-          conn |> send_message("Email already exists.")
+        Users.email_exists?(email) ->
+          conn |> Utils.send_message("Email already exists.")
 
         true ->
-          case new(username, nickname, email, password) do
+          case Users.new(username, nickname, email, password) do
             {:ok, post} ->
               conn
-              |> send_json(%{
+              |> Utils.send_json(%{
                 "message" => "Successfully registered.",
                 "id" => post.id,
                 "token" => post.token
               })
 
             {:error, _} ->
-              conn |> send_message("Failed to register.")
+              conn |> Utils.send_message("Failed to register.")
           end
       end
     else
-      _ -> conn |> send_message("Invalid parameters.", 401)
+      _ -> conn |> Utils.send_message("Invalid parameters.", 401)
     end
   end
 end

@@ -1,7 +1,7 @@
 defmodule Miki.Experiments do
   use Ecto.Schema
   import Ecto.Query
-  import Miki.Utils
+  alias(Miki.{Experiments, Participations, Repo, Users, Utils})
 
   schema "experiments" do
     field(:title, :string)
@@ -14,10 +14,10 @@ defmodule Miki.Experiments do
     field(:money_left, :decimal)
     field(:time_created, :utc_datetime)
     field(:time_modified, :utc_datetime)
-    belongs_to(:creator, Miki.Users, foreign_key: :creator_id)
+    belongs_to(:creator, Users, foreign_key: :creator_id)
 
-    many_to_many(:users, Miki.Users,
-      join_through: "users_experiments",
+    many_to_many(:users, Users,
+      join_through: Participations,
       join_keys: [experiment_id: :id, user_id: :id]
     )
   end
@@ -45,7 +45,7 @@ defmodule Miki.Experiments do
 
   def detail(id),
     do:
-      Miki.Experiments
+      Experiments
       |> where(id: ^id)
       |> select([
         :title,
@@ -61,25 +61,24 @@ defmodule Miki.Experiments do
         :creator_id,
         :id
       ])
-      |> Miki.Repo.one()
-      |> Miki.Repo.preload([:users, :creator])
+      |> Repo.one()
+      |> Repo.preload([:users, :creator])
 
-  def active?(id), do: Miki.Experiments |> where(id: ^id) |> select([:active]) |> Miki.Repo.one()
+  def active?(id), do: Experiments |> where(id: ^id) |> select([:active]) |> Repo.one()
 
   def creator_id(id),
-    do: Miki.Experiments |> where(id: ^id) |> select([:creator_id]) |> Miki.Repo.one()
+    do: Experiments |> where(id: ^id) |> select([:creator_id]) |> Repo.one()
 
   def all_active() do
-    query = Miki.Experiments |> where(active: true)
+    query = Experiments |> where(active: true)
 
-    {query |> Miki.Repo.aggregate(:count),
-     query |> order_by(desc: :time_modified) |> Miki.Repo.all()}
+    {query |> Repo.aggregate(:count), query |> order_by(desc: :time_modified) |> Repo.all()}
   end
 
   def new(title, description, person_wanted, money_per_person, creator_id) do
-    time_created = current_time()
+    time_created = Utils.current_time()
 
-    %Miki.Experiments{
+    %Experiments{
       title: title,
       description: description,
       active: true,
@@ -92,13 +91,16 @@ defmodule Miki.Experiments do
       time_modified: time_created,
       creator_id: creator_id
     }
-    |> Miki.Repo.insert()
+    |> Repo.insert()
   end
+
+  def id_exists?(id), do: Experiments |> where(id: ^id) |> Repo.exists?()
 
   def update(new_info, id),
     do:
-      Miki.Experiments
-      |> Miki.Repo.get(id)
+      Experiments
+      |> where(id: ^id)
+      |> Repo.one()
       |> Ecto.Changeset.cast(new_info, [
         :active,
         :title,
@@ -106,37 +108,37 @@ defmodule Miki.Experiments do
         :person_wanted,
         :money_per_person
       ])
-      |> Miki.Repo.update()
+      |> Repo.update()
 
-  def add_volunteer(user_id, exp_id) do
-    user =
-      Miki.Users
-      |> where(id: ^user_id)
-      |> Miki.Repo.one()
-      |> Miki.Repo.preload(:experiments_participate_in)
+  # def add_volunteer(user_id, exp_id) do
+  #   user =
+  #     Users
+  #     |> where(id: ^user_id)
+  #     |> Repo.one()
+  #     |> Repo.preload(:experiments_participate_in)
 
-    experiment = Miki.Experiments |> where(id: ^exp_id) |> Miki.Repo.one()
+  #   experiment = Experiments |> where(id: ^exp_id) |> Repo.one()
 
-    if experiment.person_wanted > experiment.person_already do
-      case user
-           |> Ecto.Changeset.change()
-           |> Ecto.Changeset.put_assoc(
-             :experiments_participate_in,
-             [experiment | user.experiments_participate_in]
-           )
-           |> Miki.Repo.update() do
-        {:ok, _} ->
-          experiment
-          |> Ecto.Changeset.cast(%{person_already: experiment.person_already + 1}, [
-            :person_already
-          ])
-          |> Miki.Repo.update()
+  #   if experiment.person_wanted > experiment.person_already do
+  #     case user
+  #          |> Ecto.Changeset.change()
+  #          |> Ecto.Changeset.put_assoc(
+  #            :experiments_participate_in,
+  #            [experiment | user.experiments_participate_in]
+  #          )
+  #          |> Repo.update() do
+  #       {:ok, _} ->
+  #         experiment
+  #         |> Ecto.Changeset.cast(%{person_already: experiment.person_already + 1}, [
+  #           :person_already
+  #         ])
+  #         |> Repo.update()
 
-        error ->
-          error
-      end
-    else
-      {:error, 0}
-    end
-  end
+  #       error ->
+  #         error
+  #     end
+  #   else
+  #     {:error, 0}
+  #   end
+  # end
 end
