@@ -31,8 +31,8 @@ defmodule Miki.Participations do
         |> Repo.one()
         |> Map.get(:status)
 
-      case current_status do
-        "to-qualify-user" when status == "to-check-result" ->
+      case {current_status, status} do
+        {"to-qualify-user", "to-check-result"} ->
           %Experiments{person_wanted: person_wanted, person_already: person_already} =
             Experiments
             |> where(id: ^exp_id)
@@ -55,7 +55,7 @@ defmodule Miki.Participations do
             {:error, ""}
           end
 
-        "to-check-result" when status == "finished" ->
+        {"to-check-result", "finished"} ->
           Participations
           |> where(user_id: ^user_id, experiment_id: ^exp_id)
           |> Repo.one()
@@ -69,4 +69,7 @@ defmodule Miki.Participations do
       {:error, ""}
     end
   end
+end
+
+defmodule Miki.Participations.Sence do
 end

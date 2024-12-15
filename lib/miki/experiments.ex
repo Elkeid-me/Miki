@@ -1,7 +1,8 @@
 defmodule Miki.Experiments do
   use Ecto.Schema
   import Ecto.Query
-  alias(Miki.{Experiments, Participations, Repo, Users, Utils})
+  alias Miki.TagsExps
+  alias(Miki.{Experiments, Participations, Repo, Tags, TagsExps, Users, Utils})
 
   schema "experiments" do
     field(:title, :string)
@@ -19,6 +20,11 @@ defmodule Miki.Experiments do
     many_to_many(:users, Users,
       join_through: Participations,
       join_keys: [experiment_id: :id, user_id: :id]
+    )
+
+    many_to_many(:tags, Tags,
+      join_through: TagsExps,
+      join_keys: [experiment_id: :id, tag_id: :id]
     )
   end
 
@@ -109,36 +115,4 @@ defmodule Miki.Experiments do
         :money_per_person
       ])
       |> Repo.update()
-
-  # def add_volunteer(user_id, exp_id) do
-  #   user =
-  #     Users
-  #     |> where(id: ^user_id)
-  #     |> Repo.one()
-  #     |> Repo.preload(:experiments_participate_in)
-
-  #   experiment = Experiments |> where(id: ^exp_id) |> Repo.one()
-
-  #   if experiment.person_wanted > experiment.person_already do
-  #     case user
-  #          |> Ecto.Changeset.change()
-  #          |> Ecto.Changeset.put_assoc(
-  #            :experiments_participate_in,
-  #            [experiment | user.experiments_participate_in]
-  #          )
-  #          |> Repo.update() do
-  #       {:ok, _} ->
-  #         experiment
-  #         |> Ecto.Changeset.cast(%{person_already: experiment.person_already + 1}, [
-  #           :person_already
-  #         ])
-  #         |> Repo.update()
-
-  #       error ->
-  #         error
-  #     end
-  #   else
-  #     {:error, 0}
-  #   end
-  # end
 end

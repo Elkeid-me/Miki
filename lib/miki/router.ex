@@ -2,7 +2,7 @@ defmodule Miki.Router do
   use Plug.Router
   import Miki.Utils
 
-  plug(Plug.Logger, log: :debug)
+  plug(Plug.Logger)
 
   plug(Corsica,
     origins: "*",
@@ -41,6 +41,8 @@ defmodule Miki.Router do
   post("/experiments/edit/:id", to: Miki.Experiments.Edit)
   get("/experiments/:id", to: Miki.Experiments.Detail)
   get("/experiments/participate/:id", to: Miki.Experiments.Participate)
+
+  get("/tags", to: Miki.Tags.All)
 
   match(_, do: conn |> send_resp(404, "Requested API not exists, or the method is wrong."))
 end
