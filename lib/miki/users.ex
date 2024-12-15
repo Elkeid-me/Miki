@@ -61,6 +61,14 @@ defmodule Miki.Users do
 
   def email_exists?(email), do: Users |> where(email: ^email) |> Repo.exists?()
 
+  def update(attrs, id),
+    do:
+      Users
+      |> where(id: ^id)
+      |> Repo.one()
+      |> Ecto.Changeset.cast(attrs, [:nickname, :password, :username, :email])
+      |> Repo.update()
+
   def id_exists?(id), do: Users |> where(id: ^id) |> Repo.exists?()
 
   def new(username, nickname, email, password) do

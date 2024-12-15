@@ -22,6 +22,7 @@ defmodule Miki.Router do
 
   post("/users/register", to: Miki.Users.Register)
   post("/users/login", to: Miki.Users.Login)
+  post("/users/edit", to: Miki.Users.Edit)
   get("/users/profile/:id", to: Miki.Users.Profile)
   get("/users/profile", to: Miki.Users.Profile)
   get("/users/instruction/:id", to: Miki.Users.Instruction)

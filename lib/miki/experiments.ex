@@ -102,12 +102,12 @@ defmodule Miki.Experiments do
 
   def id_exists?(id), do: Experiments |> where(id: ^id) |> Repo.exists?()
 
-  def update(new_info, id),
+  def update(attrs, id),
     do:
       Experiments
       |> where(id: ^id)
       |> Repo.one()
-      |> Ecto.Changeset.cast(new_info, [
+      |> Ecto.Changeset.cast(attrs, [
         :active,
         :title,
         :description,

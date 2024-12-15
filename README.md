@@ -315,6 +315,44 @@ mix run --no-halt
     { }
     ```
 
+### 修改用户信息
+
+- API：`<host>:<port>/users/edit`
+- 方法：POST
+  - header
+    - `content-type`: `application/json`
+    - `token`：`<token>`
+  - body
+    ```json
+    {
+      "username": "alice",
+      "nickname": "alice",
+      "password": "114514",
+      "email": "alice@gmail",
+    }
+    ```
+  - 注意：以上五个字段不必同时存在。如果只想更新 `username`，则可以
+    ```json
+    { "username": "alice" }
+    ```
+- 返回
+  - header
+    - status：200 或 401
+    - `content-type`: `application/json`
+    - body
+      成功：
+      ```json
+      { "message": "Profile edited successfully." }
+      ```
+      未知原因的编辑失败：
+      ```json
+      { "message": "Failed to create profile." }
+      ```
+      不合法的参数（如没有 `token`，或 `token` 代表的用户不是 `id` 实验的创建者）
+      ```json
+      { "message": "Invalid parameters." }
+    ```
+
 ### 所有实验信息：
 
 - API：`<host>:<port>/experiments`
