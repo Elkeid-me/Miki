@@ -315,7 +315,7 @@ mix run --no-halt
     { }
     ```
 
-### 修改用户信息
+### 编辑用户信息
 
 - API：`<host>:<port>/users/edit`
 - 方法：POST
@@ -353,7 +353,7 @@ mix run --no-halt
       { "message": "Invalid parameters." }
     ```
 
-### 所有实验信息：
+### 所有实验信息
 
 - API：`<host>:<port>/experiments`
 - 方法：GET
