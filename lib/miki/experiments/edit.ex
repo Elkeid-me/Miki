@@ -13,7 +13,7 @@ defmodule Miki.Experiments.Edit do
            |> Map.take(["active", "title", "description", "person_wanted", "money_per_person"])
            |> Experiments.update(exp_id) do
         {:ok, _} -> conn |> Utils.send_message("Expriment edited successfully.")
-        {:error, _} -> conn |> Utils.send_message("Failed to edit expriment.")
+        {:error, _} -> conn |> Utils.send_message("Failed to edit expriment.", 401)
       end
     else
       _ -> conn |> Utils.send_message("Invalid parameters.", 401)

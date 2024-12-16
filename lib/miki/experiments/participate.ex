@@ -12,7 +12,7 @@ defmodule Miki.Experiments.Participate do
          when active <- Experiments.active?(exp_id) do
       case Participations.participte(user_id, exp_id) do
         {:ok, _} -> conn |> Utils.send_message("Participate in successfully.")
-        {:error, _} -> conn |> Utils.send_message("Failed to participate.")
+        {:error, _} -> conn |> Utils.send_message("Failed to participate.", 401)
       end
     else
       _ -> conn |> Utils.send_message("Invalid parameters.", 401)

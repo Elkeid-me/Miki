@@ -10,7 +10,7 @@ defmodule Miki.Users.Login do
         conn
         |> Utils.send_json(%{"message" => "Successfully logged in.", "token" => token, "id" => id})
       else
-        _ -> conn |> Utils.send_message("Invalid email or password.")
+        _ -> conn |> Utils.send_message("Invalid email or password.", 401)
       end
     else
       _ -> conn |> Utils.send_message("Invalid parameters.", 401)

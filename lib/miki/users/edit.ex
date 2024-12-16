@@ -11,7 +11,7 @@ defmodule Miki.Users.Edit do
            |> Map.take(["password", "username", "email", "nickname"])
            |> Users.update(id) do
         {:ok, _} -> conn |> Utils.send_message("Profile edited successfully.")
-        {:error, _} -> conn |> Utils.send_message("Failed to edit Profile.")
+        {:error, _} -> conn |> Utils.send_message("Failed to edit Profile.", 401)
       end
     else
       _ -> conn |> Utils.send_message("Invalid parameters.", 401)

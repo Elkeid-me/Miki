@@ -12,10 +12,10 @@ defmodule Miki.Users.Register do
          } <- conn.body_params do
       cond do
         Users.username_exists?(username) ->
-          conn |> Utils.send_message("Username already exists.")
+          conn |> Utils.send_message("Username already exists.", 401)
 
         Users.email_exists?(email) ->
-          conn |> Utils.send_message("Email already exists.")
+          conn |> Utils.send_message("Email already exists.", 401)
 
         true ->
           case Users.new(username, nickname, email, password) do
@@ -28,7 +28,7 @@ defmodule Miki.Users.Register do
               })
 
             {:error, _} ->
-              conn |> Utils.send_message("Failed to register.")
+              conn |> Utils.send_message("Failed to register.", 401)
           end
       end
     else

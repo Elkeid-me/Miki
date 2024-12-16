@@ -15,7 +15,7 @@ defmodule Miki.Experiments.Create do
          } <- conn.body_params do
       case Experiments.new(title, description, person_wanted, money_per_person, user_id) do
         {:ok, post} -> conn |> Utils.send_json(Miki.Experiments.to_map(post))
-        {:error, _} -> conn |> Utils.send_message("Failed to create experiment.")
+        {:error, _} -> conn |> Utils.send_message("Failed to create experiment.", 401)
       end
     else
       _ -> conn |> Utils.send_message("Invalid parameters.", 401)
